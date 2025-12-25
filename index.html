@@ -17,9 +17,19 @@
 
         /* ==================== 基础样式重置 ==================== */
         *{margin:0;padding:0;box-sizing:border-box}
-        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;background:#131722;color:var(--text-primary);line-height:1.6;position:relative;overflow-x:hidden}
+        html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+        body{
+            font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;
+            background:#131722;
+            color:var(--text-primary);
+            line-height:1.6;
+            position:relative;
+            overflow-x:hidden;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+            touch-action:pan-y;
+        }
         .container{max-width:1280px;margin:0 auto;padding:0 32px}
-        html{scroll-behavior:smooth}
 
         /* ==================== 背景图片 ==================== */
         .global-chart-bg{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:230%;height:230%;object-fit:contain;opacity:0.55;pointer-events:none;filter:blur(0.1px);z-index:0}
@@ -83,8 +93,7 @@
         .why-choose-section .container{padding:10px 32px}
         .why-choose-section .section-title{margin-top:-56px;margin-bottom:4px}
         
-        /* 卡片容器：应用毛玻璃效果和边框 */
-        .advantage-item-wrapper{
+        .advantage-item-wrapper,.roadmap-card-wrapper{
             max-width:533px;
             margin:30px auto 0;
             transform-origin:center center;
@@ -100,15 +109,14 @@
             transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
         }
         .advantage-item-wrapper:first-of-type{margin-top:48px}
-        .advantage-item-wrapper:hover:not(.on-centerline){
+        .advantage-item-wrapper:hover:not(.on-centerline),.roadmap-card-wrapper:hover:not(.on-centerline){
             border-color:rgba(0,123,255,0.5);
-            background:rgba(15,15,15,0.3);
-            -webkit-backdrop-filter:blur(10px);
-            backdrop-filter:blur(10px);
             box-shadow:0 4px 16px rgba(0,123,255,0.15);
         }
+        .roadmap-card-wrapper{max-width:800px}
+        .roadmap-card-wrapper:first-of-type{margin-top:16px}
+        .roadmap-card-wrapper:last-of-type{margin-bottom:280px}
         
-        /* 卡片内容：透明背景，由wrapper提供毛玻璃效果 */
         .advantage-item{
             width:100%;
             padding:24px 20px;
@@ -158,53 +166,58 @@
         .roadmap-section .container{padding:10px 32px;padding-bottom:0;margin-bottom:0}
         .roadmap-section .section-title{margin-top:-40px;margin-bottom:0 !important}
         
-        /* 卡片容器：与advantage-item-wrapper相同的样式 */
-        .roadmap-card-wrapper{
-            max-width:800px;
-            margin:60px auto 0;
-            transform-origin:center center;
-            will-change:transform,opacity;
-            margin-bottom:0;
-            position:relative;
-            border:1px solid var(--border-color);
-            border-radius:12px;
-            overflow:hidden;
-            background:rgba(15,15,15,0.3);
-            -webkit-backdrop-filter:blur(10px);
-            backdrop-filter:blur(10px);
-            box-shadow:0 2px 8px rgba(0,0,0,0.1);
-            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
-        }
-        .roadmap-card-wrapper:first-of-type{margin-top:16px}
-        .roadmap-card-wrapper:last-of-type{margin-bottom:280px;padding-bottom:0}
-        .roadmap-card-wrapper:hover:not(.on-centerline){
-            border-color:rgba(0,123,255,0.5);
-            background:rgba(15,15,15,0.3);
-            -webkit-backdrop-filter:blur(10px);
-            backdrop-filter:blur(10px);
-            box-shadow:0 4px 16px rgba(0,123,255,0.15);
-        }
-        
-        /* 卡片内容 */
+        .roadmap-card-wrapper{margin:60px auto 0}
         .roadmap-card{
+            display:flex;
+            align-items:stretch;
+            gap:0;
+            padding:0;
+        }
+        .roadmap-left{
+            flex:0 0 auto;
+            width:180px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:24px 20px 24px 20px;
+            box-sizing:border-box;
+        }
+        .roadmap-divider{
+            width:1px;
+            background:rgba(255,255,255,0.15);
+            flex-shrink:0;
+            margin:0;
+        }
+        .roadmap-right{
+            flex:1;
             padding:24px 20px;
-            margin-bottom:0;
+            padding-left:28px;
             padding-bottom:24px;
-            cursor:default;
-            background:transparent;
-            border:none;
-            border-radius:12px;
-            overflow:hidden;
-            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
-            position:relative;
+            box-sizing:border-box;
+            display:flex;
+            align-items:flex-start;
+        }
+        .roadmap-header{
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+        }
+        .roadmap-year{
+            color:rgba(255,255,255,0.95);
+            font-size:28px;
+            font-weight:400;
+            line-height:1;
+            margin-bottom:4px;
         }
         .roadmap-quarter{
             color:rgba(255,255,255,0.95);
             font-size:24px;
-            font-weight:800;
+            font-weight:400;
             text-transform:uppercase;
             letter-spacing:0.2em;
-            margin-bottom:8px;
+            line-height:1;
         }
         .roadmap-title{font-size:28px;font-weight:700;margin-bottom:12px}
         .roadmap-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:0;padding-bottom:0}
@@ -217,7 +230,6 @@
         .faq-section .section-title{margin-top:-40px;margin-bottom:32px !important}
         .faq-container{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:16px;margin-bottom:0;padding-bottom:0}
         
-        /* FAQ卡片：直接应用毛玻璃效果（没有wrapper） */
         .faq-item{
             cursor:pointer;
             border:1px solid var(--border-color);
@@ -231,9 +243,6 @@
         }
         .faq-item:hover:not(.on-centerline){
             border-color:rgba(0,123,255,0.5);
-            background:rgba(15,15,15,0.3);
-            -webkit-backdrop-filter:blur(10px);
-            backdrop-filter:blur(10px);
             box-shadow:0 4px 16px rgba(0,123,255,0.15);
         }
         .faq-item.active{
@@ -260,25 +269,12 @@
         .faq-item:last-child .faq-answer p{margin-bottom:0;padding-bottom:0}
         .checkmark{background:var(--gradient-blue);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;flex-shrink:0;margin-top:2px}
 
-        /* ==================== 中轴线高亮效果 ==================== */
-        /* 当卡片位于屏幕中轴线时，边框和底色都显示深蓝色效果 */
         .advantage-item-wrapper.on-centerline,.roadmap-card-wrapper.on-centerline,.faq-item.on-centerline{
             border-color:rgba(0,50,150,1) !important;
             background:rgba(0,50,150,0.25) !important;
-            -webkit-backdrop-filter:blur(10px) !important;
-            backdrop-filter:blur(10px) !important;
         }
-        .advantage-item-wrapper.on-centerline:hover,.roadmap-card-wrapper.on-centerline:hover,.faq-item.on-centerline:hover{
-            border-color:rgba(0,50,150,1) !important;
+        .advantage-item-wrapper.on-centerline:hover,.roadmap-card-wrapper.on-centerline:hover,.faq-item.on-centerline:hover,.faq-item.on-centerline.active{
             background:rgba(0,50,150,0.3) !important;
-            -webkit-backdrop-filter:blur(10px) !important;
-            backdrop-filter:blur(10px) !important;
-        }
-        .faq-item.on-centerline.active{
-            border-color:rgba(0,50,150,1) !important;
-            background:rgba(0,50,150,0.3) !important;
-            -webkit-backdrop-filter:blur(10px) !important;
-            backdrop-filter:blur(10px) !important;
         }
 
         /* ==================== Footer ==================== */
@@ -289,11 +285,143 @@
         .footer-copyright{text-align:right;color:#fff;font-size:14px}
 
         /* ==================== 响应式设计 ==================== */
+        /* 平板和手机端适配 */
+        @media (max-width:1024px){
+            .container{padding:0 24px}
+            .hero{top:100px;margin-top:30px}
+            .hero-title{font-size:clamp(36px,8vw,72px)}
+            .hero-subtitle{font-size:clamp(14px,3vw,18px);white-space:normal;padding:0 16px}
+            .advantage-header{width:100%;max-width:100%}
+            .advantage-item-wrapper{max-width:100%;margin:20px auto 0}
+            .advantage-item-wrapper:first-of-type{margin-top:32px}
+            .roadmap-card-wrapper{max-width:100%;margin:40px auto 0}
+            .roadmap-card-wrapper:first-of-type{margin-top:12px}
+            .faq-container{max-width:100%}
+        }
+        
+        /* 手机端适配 */
         @media (max-width:768px){
-            .nav-links{gap:20px}
-            .hero{padding-top:25px;min-height:90vh}
-            section{padding:17px 0}
-            .navbar-copyright{font-size:12px;margin-left:16px}
+            .container{padding:0 16px}
+            .navbar{padding:12px 0}
+            .navbar .container,.navbar-bottom .container{padding-left:16px;padding-right:16px}
+            .logo{font-size:20px}
+            .nav-links{gap:16px}
+            .nav-links a{font-size:14px;padding:6px}
+            .nav-links a svg{width:18px;height:18px}
+            .navbar-copyright{font-size:12px;margin-left:12px}
+            
+            .hero{top:80px;margin-top:20px;min-height:85vh}
+            .hero-title{font-size:clamp(32px,10vw,56px);line-height:1.1;margin-bottom:16px}
+            .hero-subtitle{font-size:clamp(13px,3.5vw,16px);line-height:1.5;padding:0 12px;white-space:normal}
+            .cta-button-primary{font-size:14px;padding:10px 24px;min-width:140px;height:44px}
+            
+            section{padding:10px 0;min-height:auto}
+            .section-title{font-size:clamp(28px,8vw,40px);margin-bottom:16px}
+            
+            .why-choose-section{margin-top:-20px}
+            .why-choose-section .container{padding:8px 16px}
+            .why-choose-section .section-title{margin-top:-32px;margin-bottom:8px}
+            .advantage-item-wrapper{max-width:100%;margin:20px auto 0;border-radius:10px}
+            .advantage-item-wrapper:first-of-type{margin-top:24px}
+            .advantage-item{padding:20px 16px}
+            .advantage-title{font-size:20px;padding-bottom:10px}
+            .advantage-description{font-size:15px;margin-top:10px}
+            
+            .showcase-section{margin-top:-80px}
+            .showcase-section .container{padding:8px 16px}
+            .showcase-section .section-title{margin-top:-24px;margin-bottom:8px}
+            .showcase-content{font-size:16px;padding:0 12px}
+            
+            .roadmap-section{margin-top:-40px}
+            .roadmap-section .container{padding:8px 16px}
+            .roadmap-section .section-title{margin-top:-24px;margin-bottom:8px}
+            .roadmap-card-wrapper{max-width:100%;margin:40px auto 0;border-radius:10px}
+            .roadmap-card-wrapper:first-of-type{margin-top:12px}
+            .roadmap-card-wrapper:last-of-type{margin-bottom:200px}
+            .roadmap-card{flex-direction:column}
+            .roadmap-left{width:100%;padding:16px;justify-content:center}
+            .roadmap-divider{width:100%;height:1px;margin:8px 0}
+            .roadmap-right{padding:16px;padding-top:0}
+            .roadmap-year{font-size:24px;margin-bottom:3px}
+            .roadmap-quarter{font-size:18px}
+            .roadmap-list li{font-size:15px;gap:12px}
+            
+            .faq-section .container{padding:8px 16px}
+            .faq-section .section-title{margin-top:-24px;margin-bottom:24px}
+            .faq-container{max-width:100%;gap:12px}
+            .faq-question{padding:20px 20px}
+            .faq-question span:first-child{font-size:16px}
+            .faq-icon{font-size:24px;width:24px;height:24px}
+            .faq-answer{padding:0 20px}
+            .faq-item.active .faq-answer{padding:0 20px 20px 20px}
+            .faq-answer p{font-size:15px;line-height:1.6}
+            
+            #fixed-scroll-indicator{width:36px;height:36px;bottom:30px}
+            #fixed-scroll-indicator svg{width:20px;height:20px}
+        }
+        
+        /* 小屏手机适配 */
+        @media (max-width:480px){
+            .container{padding:0 12px}
+            .navbar{padding:10px 0}
+            .navbar .container,.navbar-bottom .container{padding-left:12px;padding-right:12px}
+            .logo{font-size:18px}
+            .nav-links{gap:12px}
+            .nav-links a{font-size:13px;padding:4px}
+            .nav-links a svg{width:16px;height:16px}
+            .navbar-copyright{font-size:11px;margin-left:8px}
+            
+            .hero{top:60px;margin-top:15px;min-height:80vh}
+            .hero-title{font-size:clamp(28px,12vw,48px);margin-bottom:12px}
+            .hero-subtitle{font-size:clamp(12px,4vw,15px);padding:0 8px}
+            .cta-button-primary{font-size:13px;padding:8px 20px;min-width:120px;height:40px}
+            
+            .section-title{font-size:clamp(24px,10vw,36px);margin-bottom:12px}
+            
+            .why-choose-section .container{padding:6px 12px}
+            .why-choose-section .section-title{margin-top:-24px;margin-bottom:6px}
+            .advantage-item-wrapper{margin:16px auto 0;border-radius:8px}
+            .advantage-item-wrapper:first-of-type{margin-top:20px}
+            .advantage-item{padding:16px 12px}
+            .advantage-title{font-size:18px;padding-bottom:8px}
+            .advantage-description{font-size:14px;margin-top:8px}
+            
+            .showcase-section .container{padding:6px 12px}
+            .showcase-section .section-title{margin-top:-20px;margin-bottom:6px}
+            .showcase-content{font-size:15px;padding:0 8px}
+            
+            .roadmap-section .container{padding:6px 12px}
+            .roadmap-section .section-title{margin-top:-20px;margin-bottom:6px}
+            .roadmap-card-wrapper{margin:32px auto 0;border-radius:8px}
+            .roadmap-card-wrapper:first-of-type{margin-top:10px}
+            .roadmap-card-wrapper:last-of-type{margin-bottom:160px}
+            .roadmap-card{flex-direction:column}
+            .roadmap-left{width:100%;padding:12px;justify-content:center}
+            .roadmap-divider{width:100%;height:1px;margin:6px 0}
+            .roadmap-right{padding:12px;padding-top:0}
+            .roadmap-year{font-size:22px;margin-bottom:3px}
+            .roadmap-quarter{font-size:16px}
+            .roadmap-list{gap:10px}
+            .roadmap-list li{font-size:14px;gap:10px}
+            
+            .faq-section .container{padding:6px 12px}
+            .faq-section .section-title{margin-top:-20px;margin-bottom:20px}
+            .faq-container{gap:10px}
+            .faq-question{padding:16px 16px}
+            .faq-question span:first-child{font-size:15px}
+            .faq-icon{font-size:22px;width:22px;height:22px}
+            .faq-answer{padding:0 16px}
+            .faq-item.active .faq-answer{padding:0 16px 16px 16px}
+            .faq-answer p{font-size:14px;line-height:1.5}
+            
+            #fixed-scroll-indicator{width:32px;height:32px;bottom:20px}
+            #fixed-scroll-indicator svg{width:18px;height:18px}
+        }
+        
+        /* 横屏手机适配 */
+        @media (max-width:768px) and (orientation:landscape){
+            .hero{min-height:100vh;top:60px}
+            section{min-height:100vh}
         }
     </style>
 </head>
@@ -446,34 +574,58 @@
             <h2 class="section-title">RoadMap</h2>
             <div class="roadmap-card-wrapper">
                 <div class="roadmap-card">
-                    <div class="roadmap-quarter">Q1 2026</div>
-                    <ul class="roadmap-list">
-                        <li><span class="checkmark">✓</span> Beta platform launch with core aggregation features</li>
-                        <li><span class="checkmark">✓</span> Integration with at least 3 major CLOB PerpDEXs</li>
-                        <li><span class="checkmark">✓</span> Support for AMM PerpDEXs on Arbitrum and BNB Chain</li>
-                        <li><span class="checkmark">✓</span> Launch XPuzzle points system</li>
-                    </ul>
+                    <div class="roadmap-left">
+                        <div class="roadmap-header">
+                            <div class="roadmap-year">2026</div>
+                            <div class="roadmap-quarter">Q1</div>
+                        </div>
+                    </div>
+                    <div class="roadmap-divider"></div>
+                    <div class="roadmap-right">
+                        <ul class="roadmap-list">
+                            <li><span class="checkmark">✓</span> Beta platform launch with core aggregation features</li>
+                            <li><span class="checkmark">✓</span> Integration with at least 3 major CLOB PerpDEXs</li>
+                            <li><span class="checkmark">✓</span> Support for AMM PerpDEXs on Arbitrum and BNB Chain</li>
+                            <li><span class="checkmark">✓</span> Launch XPuzzle points system</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="roadmap-card-wrapper">
                 <div class="roadmap-card highlighted">
-                    <div class="roadmap-quarter">Q2 2026</div>
-                    <ul class="roadmap-list">
-                        <li><span class="checkmark">✓</span> Official platform launch</li>
-                        <li><span class="checkmark">✓</span> Integration with more CLOB PerpDEXs</li>
-                        <li><span class="checkmark">✓</span> Support for AMM PerpDEXs on more blockchains</li>
-                        <li><span class="checkmark">✓</span> Enhanced AI Agent integration</li>
-                        <li><span class="checkmark">✓</span> Third-party Agents can seamlessly interact with XPuzzle</li>
-                    </ul>
+                    <div class="roadmap-left">
+                        <div class="roadmap-header">
+                            <div class="roadmap-year">2026</div>
+                            <div class="roadmap-quarter">Q2</div>
+                        </div>
+                    </div>
+                    <div class="roadmap-divider"></div>
+                    <div class="roadmap-right">
+                        <ul class="roadmap-list">
+                            <li><span class="checkmark">✓</span> Official platform launch</li>
+                            <li><span class="checkmark">✓</span> Integration with more CLOB PerpDEXs</li>
+                            <li><span class="checkmark">✓</span> Support for AMM PerpDEXs on more blockchains</li>
+                            <li><span class="checkmark">✓</span> Enhanced AI Agent integration</li>
+                            <li><span class="checkmark">✓</span> Third-party Agents can seamlessly interact with XPuzzle</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="roadmap-card-wrapper">
                 <div class="roadmap-card">
-                    <div class="roadmap-quarter">Q3 2026</div>
-                    <ul class="roadmap-list">
-                        <li><span class="checkmark">✓</span> Launch decentralized Solver and Relayer solution</li>
-                        <li><span class="checkmark">✓</span> Increase community participation</li>
-                    </ul>
+                    <div class="roadmap-left">
+                        <div class="roadmap-header">
+                            <div class="roadmap-year">2026</div>
+                            <div class="roadmap-quarter">Q3</div>
+                        </div>
+                    </div>
+                    <div class="roadmap-divider"></div>
+                    <div class="roadmap-right">
+                        <ul class="roadmap-list">
+                            <li><span class="checkmark">✓</span> Launch decentralized Solver and Relayer solution</li>
+                            <li><span class="checkmark">✓</span> Increase community participation</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -595,63 +747,27 @@
             setTimeout(initBackgroundImage, 100);
         }
 
-        // ==================== 功能模块1：卡片中轴线高亮效果 ====================
-        /**
-         * 功能说明：当卡片位于屏幕中轴线时，添加 on-centerline 类，边框和底色都显示深蓝色效果
-         * 实现方式：计算每个卡片中心点与屏幕中轴线的距离，给最近的卡片添加类
-         */
         const updateCenterlineCards = () => {
-            const wrappers = document.querySelectorAll('.advantage-item-wrapper, .roadmap-card-wrapper');
-            const faqItems = document.querySelectorAll('.faq-item');
-            const vh = window.innerHeight;
-            const centerY = vh / 2;
-            const scrollY = window.scrollY || document.documentElement.scrollTop;
+            const allElements = [...document.querySelectorAll('.advantage-item-wrapper, .roadmap-card-wrapper, .faq-item')];
+            allElements.forEach(el => el.classList.remove('on-centerline'));
             
-            // 移除所有 on-centerline 类
-            wrappers.forEach(wrapper => wrapper.classList.remove('on-centerline'));
-            faqItems.forEach(item => item.classList.remove('on-centerline'));
+            const vh = window.innerHeight, centerY = vh / 2, scrollY = window.scrollY || document.documentElement.scrollTop;
+            let closestElement = null, minDistance = Infinity, closestElementTop = -1;
             
-            // 找到距离中轴线最近的元素
-            let closestElement = null;
-            let minDistance = Infinity;
-            let closestElementTop = -1;
-            
-            // 检查所有wrapper
-            wrappers.forEach(wrapper => {
-                const rect = wrapper.getBoundingClientRect();
+            allElements.forEach(el => {
+                const rect = el.getBoundingClientRect();
                 const elementTop = scrollY + rect.top;
                 const elementCenter = elementTop + rect.height / 2;
-                const viewportCenter = scrollY + centerY;
-                const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
+                const distanceFromCenter = Math.abs(elementCenter - (scrollY + centerY));
                 
-                if (distanceFromCenter < minDistance || 
-                    (Math.abs(distanceFromCenter - minDistance) < 0.1 && elementTop > closestElementTop)) {
+                if (distanceFromCenter < minDistance || (Math.abs(distanceFromCenter - minDistance) < 0.1 && elementTop > closestElementTop)) {
                     minDistance = distanceFromCenter;
-                    closestElement = wrapper;
+                    closestElement = el;
                     closestElementTop = elementTop;
                 }
             });
             
-            // 检查所有faq-item
-            faqItems.forEach(item => {
-                const rect = item.getBoundingClientRect();
-                const elementTop = scrollY + rect.top;
-                const elementCenter = elementTop + rect.height / 2;
-                const viewportCenter = scrollY + centerY;
-                const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
-                
-                if (distanceFromCenter < minDistance || 
-                    (Math.abs(distanceFromCenter - minDistance) < 0.1 && elementTop > closestElementTop)) {
-                    minDistance = distanceFromCenter;
-                    closestElement = item;
-                    closestElementTop = elementTop;
-                }
-            });
-            
-            // 给最近的元素添加 on-centerline 类
-            if (closestElement) {
-                closestElement.classList.add('on-centerline');
-            }
+            if (closestElement) closestElement.classList.add('on-centerline');
         };
         
         const initCenterlineEffect = () => {
@@ -670,41 +786,20 @@
             window.addEventListener('resize', updateCenterlineCards, { passive: true });
         };
         
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initCenterlineEffect);
-        } else {
-            initCenterlineEffect();
-        }
+        initCenterlineEffect();
         window.addEventListener('load', initCenterlineEffect);
 
-        // ==================== 功能模块2：视觉特效系统 ====================
-        /**
-         * 功能说明：实现元素的缩放和透明度效果
-         * 特效1：放大镜特效 - 元素距离中轴线越近，缩放越大
-         * 特效2：透明渐变特效 - 元素在屏幕上方向下移动时逐渐变透明
-         */
         const EFFECT_SELECTORS = '.hero-item-wrapper,.section-title,.advantage-item-wrapper,.roadmap-card-wrapper,.showcase-content,.faq-item';
         
-        // 创建RAF处理器，优化性能
         const createRAFHandler = (callback) => {
             let rafId = null, isDirty = false;
             const rafCallback = () => { 
-                if (isDirty) { 
-                    callback(); 
-                    isDirty = false; 
-                    rafId = null; 
-                } 
+                if (isDirty) { callback(); isDirty = false; rafId = null; }
             };
             const handleScroll = () => { 
-                if (!isDirty) { 
-                    isDirty = true; 
-                    if (!rafId) rafId = requestAnimationFrame(rafCallback); 
-                } 
+                if (!isDirty) { isDirty = true; if (!rafId) rafId = requestAnimationFrame(rafCallback); }
             };
-            const handleResize = () => { 
-                isDirty = true; 
-                if (!rafId) rafId = requestAnimationFrame(rafCallback); 
-            };
+            const handleResize = () => { isDirty = true; if (!rafId) rafId = requestAnimationFrame(rafCallback); };
             const init = () => { 
                 callback(); 
                 window.addEventListener('scroll', handleScroll, { passive: true }); 
@@ -717,8 +812,7 @@
             }
         };
 
-        // 特效1：放大镜特效（中心线透视缩放）
-        (function(){
+        (() => {
             const MAX_SCALE = 1.15, MIN_SCALE = 0.35, FALLOFF_RATIO = 0.55;
             const clamp = (v,min,max) => Math.min(Math.max(v,min),max);
             const smoothstep = t => t * t * (3 - 2 * t);
@@ -739,8 +833,7 @@
             createRAFHandler(applyEffect);
         })();
 
-        // 特效2：透明渐变特效（元素消失时的透明度）
-        (function(){
+        (() => {
             const MIN_OPACITY = 0, MAX_OPACITY = 1;
             const easeInOutQuart = t => t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
             const calculateOpacity = (elementCenterY, centerY) => {
@@ -764,79 +857,31 @@
             createRAFHandler(applyEffect);
         })();
 
-        // ==================== 功能模块3：Coming Soon 提示 ====================
-        /**
-         * 功能说明：点击docs链接和Start Trading按钮时显示"Coming Soon"提示
-         */
         const initComingSoon = () => {
-            // Docs链接
+            const handleClick = (e) => { e.preventDefault(); alert('Coming Soon'); };
             const docsLink = document.querySelector('a[href="#docs"]');
-            if (docsLink) {
-                docsLink.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    alert('Coming Soon');
-                });
-            }
-            
-            // Start Trading按钮
             const startTradingBtn = document.querySelector('.cta-button-primary');
-            if (startTradingBtn) {
-                startTradingBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    alert('Coming Soon');
-                });
-            }
+            if (docsLink) docsLink.addEventListener('click', handleClick);
+            if (startTradingBtn) startTradingBtn.addEventListener('click', handleClick);
         };
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initComingSoon);
-        } else {
-            setTimeout(initComingSoon, 100);
-        }
 
-        // ==================== 功能模块4：FAQ手风琴交互 ====================
-        /**
-         * 功能说明：点击FAQ问题展开/收起答案
-         * 实现方式：切换 active 类，CSS控制 max-height 实现动画
-         */
         const initFAQ = () => {
-            const faqItems = document.querySelectorAll('.faq-item');
-            faqItems.forEach(item => {
+            document.querySelectorAll('.faq-item').forEach(item => {
                 const question = item.querySelector('.faq-question');
                 if (!question) return;
                 question.addEventListener('click', () => {
                     const isActive = item.classList.contains('active');
-                    // 关闭所有其他FAQ项
-                    faqItems.forEach(otherItem => {
-                        if (otherItem !== item) {
-                            otherItem.classList.remove('active');
-                        }
+                    document.querySelectorAll('.faq-item').forEach(other => {
+                        if (other !== item) other.classList.remove('active');
                     });
-                    // 切换当前项
-                    if (isActive) {
-                        item.classList.remove('active');
-                    } else {
-                        item.classList.add('active');
-                    }
+                    item.classList.toggle('active', !isActive);
                 });
             });
         };
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initFAQ);
-        } else {
-            setTimeout(initFAQ, 100);
-        }
 
-        // ==================== 功能模块4：平滑滚动 ====================
-        /**
-         * 功能说明：点击锚点链接时平滑滚动到目标位置
-         * 注意：docs链接已在initComingSoon中处理，这里跳过
-         */
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
-                // docs链接已在initComingSoon中处理，这里跳过
                 if (href === '#' || href === '#docs' || this.onclick) return;
                 e.preventDefault();
                 const target = document.querySelector(href);
@@ -871,36 +916,15 @@
             if (targetItem) window.scrollTo({ top: Math.max(0, targetItem.center - centerY), behavior: 'smooth' });
         };
 
-        // ==================== 功能模块6：初始化滚动位置 ====================
-        /**
-         * 功能说明：页面加载时，确保滚动位置在顶部
-         */
-        const setInitialScrollPosition = () => {
-            window.scrollTo({ top: 0, behavior: 'instant' });
-        };
-        
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(setInitialScrollPosition, 100);
-            });
-        } else {
-            setTimeout(setInitialScrollPosition, 100);
-        }
-        window.addEventListener('load', () => {
-            setTimeout(setInitialScrollPosition, 200);
-        });
+        const setInitialScrollPosition = () => window.scrollTo({ top: 0, behavior: 'instant' });
 
-        // ==================== 功能模块7：限制最大滚动位置 ====================
-        /**
-         * 功能说明：限制页面滚动，使最后一个FAQ项的中心点对齐屏幕中轴线时停止
-         * 实现方式：计算最后一个FAQ项的位置，动态设置最大滚动值
-         */
-        let maxScrollTop = 0;
-        let isCalculating = false;
-        let lastKnownHeight = 0;
-        let isScrollingFast = false;
-        let fastScrollTimeout = null;
-        let scrollLimitEnabled = true; // 启用滚动限制，但允许最后一个FAQ项到达中轴线
+        let maxScrollTop = 0, isCalculating = false, isScrollingFast = false, fastScrollTimeout = null;
+        
+        const getDocHeight = () => Math.max(
+            document.body.scrollHeight, document.body.offsetHeight,
+            document.documentElement.clientHeight, document.documentElement.scrollHeight,
+            document.documentElement.offsetHeight
+        );
         
         const calculateMaxScrollPosition = () => {
             const allFaqItems = document.querySelectorAll('.faq-item');
@@ -908,80 +932,44 @@
             const lastFaqItem = allFaqItems[allFaqItems.length - 1];
             if (!lastFaqItem) return;
             
-            const savedScrollPos = window.scrollY || document.documentElement.scrollTop;
-            const body = document.body;
-            const html = document.documentElement;
-            const currentHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-            const isAtBottom = savedScrollPos + window.innerHeight >= currentHeight - 10;
-            
             if (isScrollingFast) {
-                setTimeout(() => calculateMaxScrollPosition(), 500);
+                setTimeout(calculateMaxScrollPosition, 500);
                 return;
             }
             
             isCalculating = true;
-            // 不滚动到顶部，直接在当前位置计算，避免干扰用户滚动
             requestAnimationFrame(() => {
                 setTimeout(() => {
-                    const vh = window.innerHeight;
-                    const centerY = vh / 2;
+                    const vh = window.innerHeight, centerY = vh / 2;
                     const rect = lastFaqItem.getBoundingClientRect();
-                    const currentScrollPos = window.scrollY || document.documentElement.scrollTop;
-                    const itemTop = currentScrollPos + rect.top;
-                    const itemCenter = itemTop + rect.height / 2;
-                    // 计算maxScrollTop：使最后一个FAQ项的中心点对齐中轴线
-                    const newMaxScrollTop = itemCenter - centerY;
-                    
-                    const newHeight = Math.max(
-                        document.body.scrollHeight,
-                        document.body.offsetHeight,
-                        document.documentElement.clientHeight,
-                        document.documentElement.scrollHeight,
-                        document.documentElement.offsetHeight
-                    );
+                    const scrollPos = window.scrollY || document.documentElement.scrollTop;
+                    const itemCenter = scrollPos + rect.top + rect.height / 2;
+                    const newMaxScrollTop = Math.max(0, itemCenter - centerY);
+                    const newHeight = getDocHeight();
                     const requiredHeight = newMaxScrollTop + vh;
                     
                     if (newHeight < requiredHeight) {
-                        const paddingNeeded = requiredHeight - newHeight;
-                        body.style.paddingBottom = paddingNeeded + 'px';
-                        
-                        // 等待布局更新
+                        document.body.style.paddingBottom = (requiredHeight - newHeight) + 'px';
                         setTimeout(() => {
                             requestAnimationFrame(() => {
                                 const finalRect = lastFaqItem.getBoundingClientRect();
                                 const finalScrollPos = window.scrollY || document.documentElement.scrollTop;
-                                const finalItemTop = finalScrollPos + finalRect.top;
-                                const finalItemCenter = finalItemTop + finalRect.height / 2;
-                                // 确保maxScrollTop允许最后一个FAQ项到达中轴线，使用Math.max确保不为负数
-                                maxScrollTop = Math.max(0, finalItemCenter - centerY);
-                                
-                                lastKnownHeight = Math.max(
-                                    document.body.scrollHeight,
-                                    document.body.offsetHeight,
-                                    document.documentElement.clientHeight,
-                                    document.documentElement.scrollHeight,
-                                    document.documentElement.offsetHeight
-                                );
-                                
+                                maxScrollTop = Math.max(0, finalScrollPos + finalRect.top + finalRect.height / 2 - centerY);
                                 isCalculating = false;
                             });
                         }, 100);
                     } else {
-                        // 使用Math.max确保maxScrollTop不为负数
-                        maxScrollTop = Math.max(0, newMaxScrollTop);
-                        lastKnownHeight = newHeight;
+                        maxScrollTop = newMaxScrollTop;
                         isCalculating = false;
                     }
                 }, 100);
             });
         };
 
-        let lastScrollY = 0;
-        let lastScrollTime = Date.now();
+        let lastScrollY = 0, lastScrollTime = Date.now();
         
         const limitScrollPosition = () => {
-            if (!scrollLimitEnabled || isCalculating || maxScrollTop === 0) return;
-            
+            if (isCalculating || maxScrollTop === 0) return;
             const currentScrollPos = window.scrollY || document.documentElement.scrollTop;
             const currentTime = Date.now();
             const timeDelta = currentTime - lastScrollTime;
@@ -990,62 +978,39 @@
             if (timeDelta > 0 && timeDelta < 50 && scrollDelta / timeDelta > 3) {
                 isScrollingFast = true;
                 if (fastScrollTimeout) clearTimeout(fastScrollTimeout);
-                fastScrollTimeout = setTimeout(() => {
-                    isScrollingFast = false;
-                    fastScrollTimeout = null;
-                }, 200);
+                fastScrollTimeout = setTimeout(() => { isScrollingFast = false; fastScrollTimeout = null; }, 200);
             }
             
             lastScrollY = currentScrollPos;
             lastScrollTime = currentTime;
             
-            const body = document.body;
-            const html = document.documentElement;
-            const currentHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-            const isAtBottom = currentScrollPos + window.innerHeight >= currentHeight - 10;
-            
-            // 如果已经滚动到底部，完全允许继续滚动
-            if (isAtBottom || isScrollingFast) return;
+            const currentHeight = getDocHeight();
+            if (currentScrollPos + window.innerHeight >= currentHeight - 10 || isScrollingFast) return;
             
             const allFaqItems = document.querySelectorAll('.faq-item');
             if (allFaqItems.length === 0) return;
-            
-            // 只检查最后一个FAQ项，确保只有最后一个FAQ项到达中轴线时才停止滚动
             const lastFaqItem = allFaqItems[allFaqItems.length - 1];
             if (!lastFaqItem) return;
             
             const rect = lastFaqItem.getBoundingClientRect();
-            const vh = window.innerHeight;
-            const centerY = vh / 2;
             const lastItemCenterInViewport = rect.top + rect.height / 2;
+            const centerY = window.innerHeight / 2;
             
-            // 关键逻辑：只有当最后一个FAQ项的中心点还在中轴线上方时，才限制滚动
-            // 一旦最后一个FAQ项的中心点到达或超过中轴线，就完全不再限制滚动
-            // 这样前面的FAQ项可以正常滚动，只有最后一个FAQ项到达中轴线时才停止
-            if (lastItemCenterInViewport > centerY) {
-                // 最后一个FAQ项的中心点还在中轴线上方
-                // 只有当滚动位置明显超过maxScrollTop时才限制（给足够容差，允许前面的FAQ项正常滚动）
-                if (currentScrollPos > maxScrollTop + 50) {
-                    window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
-                }
+            if (lastItemCenterInViewport > centerY && currentScrollPos > maxScrollTop + 50) {
+                window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
             }
-            // 如果最后一个FAQ项的中心点已经到达或超过中轴线，完全不再限制滚动
         };
 
         const initMaxScrollLimit = () => {
-            // 增加延迟，确保Vercel上的DOM完全加载
             setTimeout(() => {
-                // 等待所有内容渲染完成
                 requestAnimationFrame(() => {
                     setTimeout(() => {
                         calculateMaxScrollPosition();
-                        let tickingLimit = false;
-                        let lastLimitCheck = 0;
+                        let tickingLimit = false, lastLimitCheck = 0;
                         const handleScrollLimit = () => {
                             const now = Date.now();
                             if (now - lastLimitCheck < 50) return;
                             lastLimitCheck = now;
-                            
                             if (!tickingLimit && !isCalculating) {
                                 window.requestAnimationFrame(() => {
                                     limitScrollPosition();
@@ -1055,51 +1020,41 @@
                             }
                         };
                         window.addEventListener('scroll', handleScrollLimit, { passive: true });
-                        window.addEventListener('resize', () => {
-                            setTimeout(() => {
-                                calculateMaxScrollPosition();
-                            }, 200);
-                        });
+                        window.addEventListener('resize', () => setTimeout(calculateMaxScrollPosition, 200));
                     }, 200);
                 });
             }, 1000);
         };
-                
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(initMaxScrollLimit, 500);
-            });
-        } else {
-            setTimeout(initMaxScrollLimit, 500);
-        }
-        window.addEventListener('load', () => {
-            setTimeout(initMaxScrollLimit, 500);
-        });
 
-        // ==================== 功能模块8：底部导航栏和滚动指示器显示控制 ====================
-        /**
-         * 功能说明：当滚动到底部时，显示底部导航栏，隐藏白色箭头
-         */
         const updateBottomNavbar = () => {
             const bottomNavbar = document.querySelector('.navbar-bottom');
             const scrollIndicator = document.getElementById('fixed-scroll-indicator');
             if (!bottomNavbar) return;
             const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-            const isAtBottom = scrollTop + windowHeight >= documentHeight - 10;
+            const isAtBottom = scrollTop + window.innerHeight >= document.documentElement.scrollHeight - 10;
             bottomNavbar.classList.toggle('visible', isAtBottom);
-            if (scrollIndicator) {
-                scrollIndicator.classList.toggle('hidden', isAtBottom);
+            if (scrollIndicator) scrollIndicator.classList.toggle('hidden', isAtBottom);
+        };
+        
+        const initOnReady = (fn) => {
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', fn);
+            } else {
+                setTimeout(fn, 100);
             }
         };
+        
+        initOnReady(initComingSoon);
+        initOnReady(initFAQ);
+        initOnReady(setInitialScrollPosition);
+        initOnReady(() => setTimeout(initMaxScrollLimit, 500));
+        window.addEventListener('load', () => {
+            setTimeout(setInitialScrollPosition, 200);
+            setTimeout(initMaxScrollLimit, 500);
+        });
         window.addEventListener('scroll', updateBottomNavbar, { passive: true });
         window.addEventListener('resize', updateBottomNavbar, { passive: true });
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', updateBottomNavbar);
-        } else {
-            updateBottomNavbar();
-        }
+        updateBottomNavbar();
     </script>
 </body>
 </html>
