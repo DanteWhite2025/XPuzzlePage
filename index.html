@@ -298,7 +298,7 @@
     </style>
 </head>
 <body>
-    <img src="./svg.jpg" alt="Candlestick Chart Background" class="global-chart-bg" onerror="this.style.display='none'">
+    <img src="" alt="Candlestick Chart Background" class="global-chart-bg">
     
     <!-- 顶部导航栏 -->
     <nav class="navbar">
@@ -544,6 +544,57 @@
     </div>
 
     <script>
+        // ==================== 功能模块0：图片加载检测 ====================
+        /**
+         * 功能说明：检测并尝试加载背景图片
+         */
+        const initBackgroundImage = () => {
+            const img = document.querySelector('.global-chart-bg');
+            if (!img) return;
+            
+            // 尝试多种可能的路径
+            const possiblePaths = [
+                'svg.jpg',
+                './svg.jpg',
+                '/svg.jpg',
+                'svg.JPG',
+                'svg.jpeg',
+                'SVG.jpg'
+            ];
+            
+            let currentIndex = 0;
+            const tryNextPath = () => {
+                if (currentIndex < possiblePaths.length) {
+                    img.src = possiblePaths[currentIndex];
+                    currentIndex++;
+                }
+            };
+            
+            img.onerror = () => {
+                console.warn('Background image failed to load:', img.src);
+                if (currentIndex < possiblePaths.length) {
+                    tryNextPath();
+                } else {
+                    // 所有路径都失败，隐藏图片
+                    img.style.display = 'none';
+                    console.warn('All background image paths failed. Image hidden.');
+                }
+            };
+            
+            img.onload = () => {
+                console.log('Background image loaded successfully:', img.src);
+            };
+            
+            // 开始尝试第一个路径
+            tryNextPath();
+        };
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initBackgroundImage);
+        } else {
+            setTimeout(initBackgroundImage, 100);
+        }
+
         // ==================== 功能模块1：卡片中轴线高亮效果 ====================
         /**
          * 功能说明：当卡片位于屏幕中轴线时，添加 on-centerline 类，边框和底色都显示深蓝色效果
@@ -849,7 +900,7 @@
         let lastKnownHeight = 0;
         let isScrollingFast = false;
         let fastScrollTimeout = null;
-        let scrollLimitEnabled = true;
+        let scrollLimitEnabled = false; // 禁用滚动限制，允许用户滚动到底部
         
         const calculateMaxScrollPosition = () => {
             const allFaqItems = document.querySelectorAll('.faq-item');
@@ -920,54 +971,8 @@
         let lastScrollTime = Date.now();
         
         const limitScrollPosition = () => {
-            if (!scrollLimitEnabled || isCalculating || maxScrollTop === 0) return;
-            
-            const scrollY = window.scrollY || document.documentElement.scrollTop;
-            const currentTime = Date.now();
-            const timeDelta = currentTime - lastScrollTime;
-            const scrollDelta = Math.abs(scrollY - lastScrollY);
-            
-            if (timeDelta > 0 && timeDelta < 50 && scrollDelta / timeDelta > 3) {
-                isScrollingFast = true;
-                if (fastScrollTimeout) clearTimeout(fastScrollTimeout);
-                fastScrollTimeout = setTimeout(() => {
-                    isScrollingFast = false;
-                    fastScrollTimeout = null;
-                }, 200);
-            }
-            
-            lastScrollY = scrollY;
-            lastScrollTime = currentTime;
-            
-            const body = document.body;
-            const html = document.documentElement;
-            const currentHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-            const isAtBottom = scrollY + window.innerHeight >= currentHeight - 10;
-            
-            // 如果已经滚动到底部，允许继续滚动
-            if (isAtBottom || isScrollingFast) return;
-            
-            const allFaqItems = document.querySelectorAll('.faq-item');
-            if (allFaqItems.length > 0) {
-                const lastFaqItem = allFaqItems[allFaqItems.length - 1];
-                const rect = lastFaqItem.getBoundingClientRect();
-                const vh = window.innerHeight;
-                const centerY = vh / 2;
-                const itemTop = scrollY + rect.top;
-                const itemCenter = itemTop + rect.height / 2;
-                const currentItemCenterInViewport = rect.top + rect.height / 2;
-                
-                // 只有当最后一个FAQ项的中心点还未到达中轴线时，才限制滚动
-                // 一旦到达或超过中轴线，允许继续向下滚动到底部
-                if (currentItemCenterInViewport > centerY) {
-                    if (scrollY > maxScrollTop + 5) {
-                        window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
-                    }
-                }
-                // 如果最后一个FAQ项的中心点已经到达或超过中轴线，允许继续滚动
-            } else if (scrollY > maxScrollTop + 10) {
-                window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
-            }
+            // 完全禁用滚动限制，允许用户自由滚动到底部
+            return;
         };
 
         const initMaxScrollLimit = () => {
