@@ -900,7 +900,7 @@
         let lastKnownHeight = 0;
         let isScrollingFast = false;
         let fastScrollTimeout = null;
-        let scrollLimitEnabled = false; // 禁用滚动限制，允许用户滚动到底部
+        let scrollLimitEnabled = true; // 启用滚动限制，但允许最后一个FAQ项到达中轴线
         
         const calculateMaxScrollPosition = () => {
             const allFaqItems = document.querySelectorAll('.faq-item');
@@ -920,84 +920,169 @@
             }
             
             isCalculating = true;
+            // 保存当前滚动位置
+            const savedScroll = currentScroll;
             window.scrollTo({ top: 0, behavior: 'instant' });
             
+            // 增加延迟，确保Vercel上的渲染完成
             setTimeout(() => {
-                const vh = window.innerHeight;
-                const centerY = vh / 2;
-                const rect = lastFaqItem.getBoundingClientRect();
-                const scrollY = window.scrollY || document.documentElement.scrollTop;
-                const itemTop = scrollY + rect.top;
-                const itemCenter = itemTop + rect.height / 2;
-                const newMaxScrollTop = itemCenter - centerY;
-                
-                const newHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-                const requiredHeight = newMaxScrollTop + vh;
-                if (newHeight < requiredHeight) {
-                    const paddingNeeded = requiredHeight - newHeight;
-                    body.style.paddingBottom = paddingNeeded + 'px';
+                // 等待一帧，确保布局稳定
+                requestAnimationFrame(() => {
+                    const vh = window.innerHeight;
+                    const centerY = vh / 2;
+                    const rect = lastFaqItem.getBoundingClientRect();
+                    const scrollY = window.scrollY || document.documentElement.scrollTop;
+                    const itemTop = scrollY + rect.top;
+                    const itemCenter = itemTop + rect.height / 2;
+                    const newMaxScrollTop = itemCenter - centerY;
                     
-                    setTimeout(() => {
-                        const finalRect = lastFaqItem.getBoundingClientRect();
-                        const finalScrollY = window.scrollY || document.documentElement.scrollTop;
-                        const finalItemTop = finalScrollY + finalRect.top;
-                        const finalItemCenter = finalItemTop + finalRect.height / 2;
-                        maxScrollTop = finalItemCenter - centerY;
+                    const newHeight = Math.max(
+                        document.body.scrollHeight,
+                        document.body.offsetHeight,
+                        document.documentElement.clientHeight,
+                        document.documentElement.scrollHeight,
+                        document.documentElement.offsetHeight
+                    );
+                    const requiredHeight = newMaxScrollTop + vh;
+                    
+                    if (newHeight < requiredHeight) {
+                        const paddingNeeded = requiredHeight - newHeight;
+                        body.style.paddingBottom = paddingNeeded + 'px';
                         
-                        lastKnownHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-                        
+                        // 再次等待布局更新
+                        setTimeout(() => {
+                            requestAnimationFrame(() => {
+                                const finalRect = lastFaqItem.getBoundingClientRect();
+                                const finalScrollY = window.scrollY || document.documentElement.scrollTop;
+                                const finalItemTop = finalScrollY + finalRect.top;
+                                const finalItemCenter = finalItemTop + finalRect.height / 2;
+                                maxScrollTop = finalItemCenter - centerY;
+                                
+                                lastKnownHeight = Math.max(
+                                    document.body.scrollHeight,
+                                    document.body.offsetHeight,
+                                    document.documentElement.clientHeight,
+                                    document.documentElement.scrollHeight,
+                                    document.documentElement.offsetHeight
+                                );
+                                
+                                // 恢复滚动位置
+                                if (isAtBottom) {
+                                    const finalHeight = Math.max(
+                                        document.body.scrollHeight,
+                                        document.body.offsetHeight,
+                                        document.documentElement.clientHeight,
+                                        document.documentElement.scrollHeight,
+                                        document.documentElement.offsetHeight
+                                    );
+                                    window.scrollTo({ top: finalHeight - window.innerHeight, behavior: 'instant' });
+                                } else {
+                                    window.scrollTo({ top: savedScroll, behavior: 'instant' });
+                                }
+                                isCalculating = false;
+                            });
+                        }, 100);
+                    } else {
+                        maxScrollTop = newMaxScrollTop;
+                        lastKnownHeight = newHeight;
                         if (isAtBottom) {
-                            const finalHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-                            window.scrollTo({ top: finalHeight - window.innerHeight, behavior: 'instant' });
+                            window.scrollTo({ top: newHeight - window.innerHeight, behavior: 'instant' });
                         } else {
-                            window.scrollTo({ top: currentScroll, behavior: 'instant' });
+                            window.scrollTo({ top: savedScroll, behavior: 'instant' });
                         }
                         isCalculating = false;
-                    }, 50);
-                } else {
-                    maxScrollTop = newMaxScrollTop;
-                    lastKnownHeight = newHeight;
-                    if (isAtBottom) {
-                        window.scrollTo({ top: newHeight - window.innerHeight, behavior: 'instant' });
-                    } else {
-                        window.scrollTo({ top: currentScroll, behavior: 'instant' });
                     }
-                    isCalculating = false;
-                }
-            }, 100);
+                });
+            }, 150);
         };
 
         let lastScrollY = 0;
         let lastScrollTime = Date.now();
         
         const limitScrollPosition = () => {
-            // 完全禁用滚动限制，允许用户自由滚动到底部
-            return;
+            if (!scrollLimitEnabled || isCalculating || maxScrollTop === 0) return;
+            
+            const scrollY = window.scrollY || document.documentElement.scrollTop;
+            const currentTime = Date.now();
+            const timeDelta = currentTime - lastScrollTime;
+            const scrollDelta = Math.abs(scrollY - lastScrollY);
+            
+            if (timeDelta > 0 && timeDelta < 50 && scrollDelta / timeDelta > 3) {
+                isScrollingFast = true;
+                if (fastScrollTimeout) clearTimeout(fastScrollTimeout);
+                fastScrollTimeout = setTimeout(() => {
+                    isScrollingFast = false;
+                    fastScrollTimeout = null;
+                }, 200);
+            }
+            
+            lastScrollY = scrollY;
+            lastScrollTime = currentTime;
+            
+            const body = document.body;
+            const html = document.documentElement;
+            const currentHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+            const isAtBottom = scrollY + window.innerHeight >= currentHeight - 10;
+            
+            // 如果已经滚动到底部，允许继续滚动
+            if (isAtBottom || isScrollingFast) return;
+            
+            const allFaqItems = document.querySelectorAll('.faq-item');
+            if (allFaqItems.length > 0) {
+                const lastFaqItem = allFaqItems[allFaqItems.length - 1];
+                const rect = lastFaqItem.getBoundingClientRect();
+                const vh = window.innerHeight;
+                const centerY = vh / 2;
+                const scrollY = window.scrollY || document.documentElement.scrollTop;
+                const itemTop = scrollY + rect.top;
+                const itemCenter = itemTop + rect.height / 2;
+                const currentItemCenterInViewport = rect.top + rect.height / 2;
+                
+                // 关键修改：只有当最后一个FAQ项的中心点还未到达中轴线时，才限制滚动
+                // 一旦中心点到达或超过中轴线，就不再限制，允许继续滚动
+                if (currentItemCenterInViewport > centerY + 5) {
+                    // 只有当中心点还在中轴线上方5px以上时，才限制滚动
+                    if (scrollY > maxScrollTop + 5) {
+                        window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
+                    }
+                }
+                // 如果最后一个FAQ项的中心点已经到达或超过中轴线，不再限制滚动
+            } else if (scrollY > maxScrollTop + 10) {
+                window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
+            }
         };
 
         const initMaxScrollLimit = () => {
+            // 增加延迟，确保Vercel上的DOM完全加载
             setTimeout(() => {
-                calculateMaxScrollPosition();
-                let ticking = false;
-                let lastLimitCheck = 0;
-                const handleScroll = () => {
-                    const now = Date.now();
-                    if (now - lastLimitCheck < 50) return;
-                    lastLimitCheck = now;
-                    
-                    if (!ticking && !isCalculating) {
-                        window.requestAnimationFrame(() => {
-                            limitScrollPosition();
-                            ticking = false;
+                // 等待所有内容渲染完成
+                requestAnimationFrame(() => {
+                    setTimeout(() => {
+                        calculateMaxScrollPosition();
+                        let ticking = false;
+                        let lastLimitCheck = 0;
+                        const handleScroll = () => {
+                            const now = Date.now();
+                            if (now - lastLimitCheck < 50) return;
+                            lastLimitCheck = now;
+                            
+                            if (!ticking && !isCalculating) {
+                                window.requestAnimationFrame(() => {
+                                    limitScrollPosition();
+                                    ticking = false;
+                                });
+                                ticking = true;
+                            }
+                        };
+                        window.addEventListener('scroll', handleScroll, { passive: true });
+                        window.addEventListener('resize', () => {
+                            setTimeout(() => {
+                                calculateMaxScrollPosition();
+                            }, 200);
                         });
-                        ticking = true;
-                    }
-                };
-                window.addEventListener('scroll', handleScroll, { passive: true });
-                window.addEventListener('resize', () => {
-                    setTimeout(calculateMaxScrollPosition, 100);
+                    }, 200);
                 });
-            }, 800);
+            }, 1000);
         };
                 
         if (document.readyState === 'loading') {
