@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XPuzzle - The Hub for Perps & RWAs</title>
+    <style>
+        /* ==================== CSS变量定义 ==================== */
+        :root{
+            --bg-card:rgba(15,15,15,0.6);
+            --text-primary:#fff;
+            --primary-blue:#1e40af;
+            --gradient-primary:linear-gradient(135deg,#fff 0%,#87ceeb 50%,#ffd700 100%);
+            --gradient-blue:linear-gradient(135deg,#1e40af 0%,#06b6d4 100%);
+            --border-color:rgba(255,255,255,0.08);
+        }
+
+        /* ==================== 基础样式重置 ==================== */
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;background:#131722;color:var(--text-primary);line-height:1.6;position:relative;overflow-x:hidden}
+        .container{max-width:1280px;margin:0 auto;padding:0 32px}
+        html{scroll-behavior:smooth}
+
+        /* ==================== 背景图片 ==================== */
+        .global-chart-bg{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:230%;height:230%;object-fit:contain;opacity:0.55;pointer-events:none;filter:blur(0.1px);z-index:0}
+
+        /* ==================== 导航栏 ==================== */
+        .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:transparent;padding:16px 0}
+        .navbar-bottom{position:fixed;bottom:0;top:auto;z-index:1000;background:transparent;padding:16px 0;opacity:0;visibility:hidden;transition:opacity 0.3s ease, visibility 0.3s ease}
+        .navbar-bottom.visible{opacity:1;visibility:visible}
+        .navbar .container,.navbar-bottom .container{display:flex;justify-content:space-between;align-items:center;padding-left:32px;padding-right:32px}
+        .logo{font-size:24px;font-weight:700;cursor:pointer;margin:0;padding:0}
+        .logo-x{background:var(--gradient-blue);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:inline-block}
+        .nav-links{display:flex;gap:32px;align-items:center;margin:0;padding:0}
+        .nav-links a{color:rgba(255,255,255,0.7);text-decoration:none;font-size:15px;font-weight:500;padding:8px;display:flex;align-items:center}
+        .nav-links a svg{width:20px;height:20px}
+        .nav-links a:hover{color:rgba(255,255,255,0.95)}
+        .navbar-copyright{color:#fff;font-size:14px;margin:0;padding:0}
+
+        /* ==================== Hero区域 ==================== */
+        .hero{position:relative;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:0 !important;overflow:hidden;background:transparent;margin-top:50px;padding-top:0 !important;top:140px}
+        .hero .container{padding-top:0;margin-top:0}
+        .hero-content{text-align:center;max-width:862.5px;position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:clamp(12.075px,1.81125vw,24.15px);margin-top:0;padding-top:0}
+        .hero-item-wrapper{transform-origin:center center;will-change:transform,opacity;margin-top:0;padding-top:0}
+        .hero-title{font-size:clamp(53.475px,8.625vw,107.8125px);font-weight:700;line-height:1.05;margin-bottom:clamp(12.075px,1.81125vw,24.15px);letter-spacing:0.02em;word-spacing:-0.15em}
+        .hero-title .title-prefix{font-size:0.65em;word-spacing:0.035em}
+        .hero-title .highlight.separator{font-size:0.6em;display:inline-block}
+        .hero-title .highlight{background:linear-gradient(135deg,#fff 0%,#87ceeb 50%,#ffd700 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;display:inline-block;animation:gradientMove 1s linear infinite}
+        .hero-title .highlight .s-char{font-size:1em;font-weight:inherit;line-height:inherit;display:inline;vertical-align:baseline}
+        @keyframes gradientMove{0%{background-position:0% center}50%{background-position:100% center}100%{background-position:0% center}}
+        .hero-subtitle{font-size:clamp(15.525px,2.15625vw,18.975px);color:#fff;margin-bottom:clamp(8.625px,1.29375vw,17.25px);line-height:1.4;max-width:none;white-space:nowrap;margin-left:auto;margin-right:auto;text-shadow:0 0 15px rgba(255,255,255,0.3),0 0 30px rgba(135,206,235,0.2)}
+        .cta-button-primary{background:#06b6d4;color:#0a0a0a;padding:12px 32px;border:none;border-radius:30px;font-size:16px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-width:160px;height:48px}
+        .cta-button-primary:hover{background:#0ea5e9}
+
+        /* ==================== 滚动指示器（白色箭头） ==================== */
+        #fixed-scroll-indicator{
+            position:fixed !important;
+            bottom:40px !important;
+            left:50% !important;
+            transform:translateX(-50%) !important;
+            z-index:1000 !important;
+            display:flex !important;
+            justify-content:center !important;
+            align-items:center !important;
+            width:39px !important;
+            height:39px !important;
+            background:#fff !important;
+            border-radius:50% !important;
+            cursor:pointer !important;
+            transition:opacity 0.3s ease, visibility 0.3s ease !important;
+            opacity:1 !important;
+            visibility:visible !important;
+        }
+        #fixed-scroll-indicator.hidden{opacity:0 !important;visibility:hidden !important;pointer-events:none !important}
+        #fixed-scroll-indicator svg{width:24px !important;height:24px !important;color:#0a0a0a !important}
+
+        /* ==================== 通用Section样式 ==================== */
+        section{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:5px 0 5px;z-index:1}
+        .section-title{font-size:clamp(36px,5vw,52px);font-weight:700;text-align:center;margin-bottom:8px;letter-spacing:-0.03em;transform-origin:center center;will-change:transform,opacity}
+
+        /* ==================== Why XPuzzle区域 ==================== */
+        .why-choose-section{background:transparent;padding:0 0 0;margin-top:-40px}
+        .why-choose-section .container{padding:10px 32px}
+        .why-choose-section .section-title{margin-top:-56px;margin-bottom:4px}
+        
+        /* 卡片容器：应用毛玻璃效果和边框 */
+        .advantage-item-wrapper{
+            max-width:533px;
+            margin:30px auto 0;
+            transform-origin:center center;
+            will-change:transform,opacity;
+            position:relative;
+            border:1px solid var(--border-color);
+            border-radius:12px;
+            overflow:hidden;
+            background:rgba(15,15,15,0.3);
+            -webkit-backdrop-filter:blur(10px);
+            backdrop-filter:blur(10px);
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        .advantage-item-wrapper:first-of-type{margin-top:48px}
+        .advantage-item-wrapper:hover:not(.on-centerline){
+            border-color:rgba(0,123,255,0.5);
+            background:rgba(15,15,15,0.3);
+            -webkit-backdrop-filter:blur(10px);
+            backdrop-filter:blur(10px);
+            box-shadow:0 4px 16px rgba(0,123,255,0.15);
+        }
+        
+        /* 卡片内容：透明背景，由wrapper提供毛玻璃效果 */
+        .advantage-item{
+            width:100%;
+            padding:24px 20px;
+            display:flex;
+            align-items:flex-start;
+            box-sizing:border-box;
+            cursor:default;
+            background:transparent;
+            border:none;
+            border-radius:12px;
+            overflow:hidden;
+            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+            position:relative;
+        }
+        .advantage-content{width:100%;display:flex;flex-direction:column;justify-content:flex-start;align-items:center}
+        .advantage-header{width:480px;max-width:100%;display:flex;flex-direction:column;align-items:center}
+        .advantage-title{
+            font-size:24px;
+            font-weight:700;
+            margin-bottom:8px;
+            margin-top:0;
+            line-height:1.2;
+            padding-bottom:12px;
+            border-bottom:1px solid rgba(0,50,150,0.25);
+            text-align:left;
+            width:100%;
+        }
+        .advantage-description{
+            font-size:16px;
+            color:rgba(255,255,255,0.95);
+            line-height:1.5;
+            margin:0;
+            margin-top:12px;
+            margin-bottom:0;
+            text-align:left;
+            width:100%;
+        }
+
+        /* ==================== Showcase区域 ==================== */
+        .showcase-section{background:transparent;padding:0 0 3px;margin-top:-130px}
+        .showcase-section .container{padding:10px 32px}
+        .showcase-section .section-title{margin-top:-40px;margin-bottom:4px}
+        .showcase-content{max-width:800px;margin:4px auto 0;text-align:center;color:rgba(255,255,255,0.85);font-size:18px;transform-origin:center center;will-change:transform,opacity}
+
+        /* ==================== Roadmap区域 ==================== */
+        .roadmap-section{background:transparent;min-height:auto;padding:0 !important;margin-top:-60px;margin-bottom:0 !important;padding-bottom:0 !important}
+        .roadmap-section .container{padding:10px 32px;padding-bottom:0;margin-bottom:0}
+        .roadmap-section .section-title{margin-top:-40px;margin-bottom:0 !important}
+        
+        /* 卡片容器：与advantage-item-wrapper相同的样式 */
+        .roadmap-card-wrapper{
+            max-width:800px;
+            margin:60px auto 0;
+            transform-origin:center center;
+            will-change:transform,opacity;
+            margin-bottom:0;
+            position:relative;
+            border:1px solid var(--border-color);
+            border-radius:12px;
+            overflow:hidden;
+            background:rgba(15,15,15,0.3);
+            -webkit-backdrop-filter:blur(10px);
+            backdrop-filter:blur(10px);
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+        }
+        .roadmap-card-wrapper:first-of-type{margin-top:16px}
+        .roadmap-card-wrapper:last-of-type{margin-bottom:280px;padding-bottom:0}
+        .roadmap-card-wrapper:hover:not(.on-centerline){
+            border-color:rgba(0,123,255,0.5);
+            background:rgba(15,15,15,0.3);
+            -webkit-backdrop-filter:blur(10px);
+            backdrop-filter:blur(10px);
+            box-shadow:0 4px 16px rgba(0,123,255,0.15);
+        }
+        
+        /* 卡片内容 */
+        .roadmap-card{
+            padding:24px 20px;
+            margin-bottom:0;
+            padding-bottom:24px;
+            cursor:default;
+            background:transparent;
+            border:none;
+            border-radius:12px;
+            overflow:hidden;
+            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+            position:relative;
+        }
+        .roadmap-quarter{
+            color:rgba(255,255,255,0.95);
+            font-size:24px;
+            font-weight:800;
+            text-transform:uppercase;
+            letter-spacing:0.2em;
+            margin-bottom:8px;
+        }
+        .roadmap-title{font-size:28px;font-weight:700;margin-bottom:12px}
+        .roadmap-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:0;padding-bottom:0}
+        .roadmap-list li{display:flex;align-items:flex-start;gap:16px;color:rgba(255,255,255,0.95);line-height:1.7;font-size:16px;margin-bottom:0}
+        .roadmap-list li:last-child{margin-bottom:0;padding-bottom:0}
+
+        /* ==================== FAQ区域 ==================== */
+        .faq-section{background:transparent;min-height:auto;padding:0 !important;margin-top:0;margin-bottom:0 !important;padding-bottom:0 !important}
+        .faq-section .container{padding:10px 32px;padding-bottom:0;margin-bottom:0}
+        .faq-section .section-title{margin-top:-40px;margin-bottom:32px !important}
+        .faq-container{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:16px;margin-bottom:0;padding-bottom:0}
+        
+        /* FAQ卡片：直接应用毛玻璃效果（没有wrapper） */
+        .faq-item{
+            cursor:pointer;
+            border:1px solid var(--border-color);
+            border-radius:12px;
+            overflow:hidden;
+            background:rgba(15,15,15,0.3);
+            -webkit-backdrop-filter:blur(10px);
+            backdrop-filter:blur(10px);
+            transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
+            box-shadow:0 2px 8px rgba(0,0,0,0.1);
+        }
+        .faq-item:hover:not(.on-centerline){
+            border-color:rgba(0,123,255,0.5);
+            background:rgba(15,15,15,0.3);
+            -webkit-backdrop-filter:blur(10px);
+            backdrop-filter:blur(10px);
+            box-shadow:0 4px 16px rgba(0,123,255,0.15);
+        }
+        .faq-item.active{
+            border-color:var(--primary-blue);
+            background:rgba(0,123,255,0.08);
+            -webkit-backdrop-filter:blur(10px);
+            backdrop-filter:blur(10px);
+            box-shadow:0 4px 20px rgba(0,123,255,0.25);
+        }
+        .faq-item:last-child{margin-bottom:0;padding-bottom:0}
+        .faq-question{display:flex;justify-content:space-between;align-items:center;padding:24px 28px;cursor:pointer;user-select:none;transition:all 0.3s ease;position:relative}
+        .faq-question::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--border-color),transparent);opacity:0;transition:opacity 0.3s ease}
+        .faq-item.active .faq-question::after{opacity:1}
+        .faq-question:hover{background:rgba(255,255,255,0.02)}
+        .faq-item.active .faq-question{background:rgba(0,123,255,0.05)}
+        .faq-question span:first-child{font-size:18px;font-weight:600;color:rgba(255,255,255,0.95);letter-spacing:-0.01em;transition:color 0.3s ease}
+        .faq-item.active .faq-question span:first-child{color:#fff}
+        .faq-icon{font-size:28px;font-weight:200;color:var(--primary-blue);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);line-height:1;width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(0,123,255,0.1)}
+        .faq-item.active .faq-icon{transform:rotate(45deg);background:rgba(0,123,255,0.2)}
+        .faq-answer{max-height:0;overflow:hidden;transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1),padding 0.4s ease;padding:0 28px}
+        .faq-item.active .faq-answer{max-height:500px;padding:0 28px 24px 28px}
+        .faq-answer p{margin:0 0 16px 0;padding:0;color:rgba(255,255,255,0.95);font-size:16px;line-height:1.7;letter-spacing:0.01em}
+        .faq-answer p:last-child{margin-bottom:0}
+        .faq-item:last-child .faq-answer p{margin-bottom:0;padding-bottom:0}
+        .checkmark{background:var(--gradient-blue);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;font-weight:700;flex-shrink:0;margin-top:2px}
+
+        /* ==================== 中轴线高亮效果 ==================== */
+        /* 当卡片位于屏幕中轴线时，边框和底色都显示深蓝色效果 */
+        .advantage-item-wrapper.on-centerline,.roadmap-card-wrapper.on-centerline,.faq-item.on-centerline{
+            border-color:rgba(0,50,150,1) !important;
+            background:rgba(0,50,150,0.25) !important;
+            -webkit-backdrop-filter:blur(10px) !important;
+            backdrop-filter:blur(10px) !important;
+        }
+        .advantage-item-wrapper.on-centerline:hover,.roadmap-card-wrapper.on-centerline:hover,.faq-item.on-centerline:hover{
+            border-color:rgba(0,50,150,1) !important;
+            background:rgba(0,50,150,0.3) !important;
+            -webkit-backdrop-filter:blur(10px) !important;
+            backdrop-filter:blur(10px) !important;
+        }
+        .faq-item.on-centerline.active{
+            border-color:rgba(0,50,150,1) !important;
+            background:rgba(0,50,150,0.3) !important;
+            -webkit-backdrop-filter:blur(10px) !important;
+            backdrop-filter:blur(10px) !important;
+        }
+
+        /* ==================== Footer ==================== */
+        .footer{position:relative;background:transparent;padding:0;margin-top:0;z-index:1}
+        .footer .container{display:flex;justify-content:space-between;align-items:center}
+        .footer-logo{font-size:24px;font-weight:700;cursor:pointer;transition:transform 0.3s}
+        .footer-logo:hover{transform:scale(1.02)}
+        .footer-copyright{text-align:right;color:#fff;font-size:14px}
+
+        /* ==================== 响应式设计 ==================== */
+        @media (max-width:768px){
+            .nav-links{gap:20px}
+            .hero{padding-top:25px;min-height:90vh}
+            section{padding:17px 0}
+            .navbar-copyright{font-size:12px;margin-left:16px}
+        }
+    </style>
+</head>
+<body>
+    <img src="svg.jpg" alt="Candlestick Chart Background" class="global-chart-bg">
+    
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo"><span class="logo-x">X</span><span class="logo-puzzle">Puzzle</span></div>
+            <div class="nav-links">
+                <a href="#docs" title="Docs">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M10 9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+                <a href="https://x.com/xpuzzlelabs" target="_blank" title="X (Twitter)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero区域 -->
+    <section id="hero" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-item-wrapper">
+                    <h1 class="hero-title">
+                        <span class="title-prefix">The Hub for</span><br>
+                        <span class="highlight">Perp<span class="s-char">s</span></span> <span class="highlight separator">&</span> <span class="highlight">RWA<span class="s-char">s</span></span>
+                    </h1>
+                </div>
+                <div class="hero-item-wrapper">
+                    <p class="hero-subtitle">Aggregate everything, providing the best trading experience based on user intent.</p>
+                </div>
+                <div class="hero-item-wrapper">
+                    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+                        <button class="cta-button cta-button-primary">Start Trading</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why XPuzzle区域 -->
+    <section id="why-choose" class="why-choose-section">
+        <div class="container">
+            <h2 class="section-title">Why XPuzzle?</h2>
+            <div class="advantage-item-wrapper">
+                <div class="advantage-item" data-advantage="1">
+                    <div class="advantage-content">
+                        <div class="advantage-header">
+                            <h3 class="advantage-title">Intent-based Trading</h3>
+                            <p class="advantage-description">Selects optimal trading strategy based on user intent for low slippage and best funding rates, reducing friction.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="advantage-item-wrapper">
+                <div class="advantage-item" data-advantage="2">
+                    <div class="advantage-content">
+                        <div class="advantage-header">
+                            <h3 class="advantage-title">Intent-based Mining</h3>
+                            <p class="advantage-description">Simplest solution for trading miners, no cross-platform needed, connects to most PerpDEXs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="advantage-item-wrapper">
+                <div class="advantage-item" data-advantage="3">
+                    <div class="advantage-content">
+                        <div class="advantage-header">
+                            <h3 class="advantage-title">True Perps Aggregator</h3>
+                            <p class="advantage-description">Unifies CLOB and AMM on one platform, bridging them and beating all competitors.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="advantage-item-wrapper">
+                <div class="advantage-item" data-advantage="4">
+                    <div class="advantage-content">
+                        <div class="advantage-header">
+                            <h3 class="advantage-title">RWA-Friendly</h3>
+                            <p class="advantage-description">Tradeable assets include cryptocurrencies and various real-world assets.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="advantage-item-wrapper">
+                <div class="advantage-item" data-advantage="5">
+                    <div class="advantage-content">
+                        <div class="advantage-header">
+                            <h3 class="advantage-title">Web2 User Experience</h3>
+                            <p class="advantage-description">Social media or email login with multi-factor authentication, traditional app-level experience.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="advantage-item-wrapper">
+                <div class="advantage-item" data-advantage="6">
+                    <div class="advantage-content">
+                        <div class="advantage-header">
+                            <h3 class="advantage-title">Trustless</h3>
+                            <p class="advantage-description">Positions controlled by user accounts; XPuzzle only handles orders, avoiding centralized risks.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="advantage-item-wrapper">
+                <div class="advantage-item" data-advantage="7">
+                    <div class="advantage-content">
+                        <div class="advantage-header">
+                            <h3 class="advantage-title">Seamless AI Agent Integration</h3>
+                            <p class="advantage-description">Supports external agent calls, enabling cross-platform AI agent operations.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="advantage-item-wrapper">
+                <div class="advantage-item" data-advantage="8">
+                    <div class="advantage-content">
+                        <div class="advantage-header">
+                            <h3 class="advantage-title">Aggregating Everything</h3>
+                            <p class="advantage-description">XPuzzle aggregates Perps and spot trading, expanding to more scenarios.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Showcase区域 -->
+    <section id="showcase" class="showcase-section">
+        <div class="container">
+            <h2 class="section-title">Showcase</h2>
+            <div class="showcase-content">coming soon</div>
+        </div>
+    </section>
+
+    <!-- Roadmap区域 -->
+    <section id="roadmap" class="roadmap-section">
+        <div class="container">
+            <h2 class="section-title">RoadMap</h2>
+            <div class="roadmap-card-wrapper">
+                <div class="roadmap-card">
+                    <div class="roadmap-quarter">Q1 2026</div>
+                    <ul class="roadmap-list">
+                        <li><span class="checkmark">✓</span> Beta platform launch with core aggregation features</li>
+                        <li><span class="checkmark">✓</span> Integration with at least 3 major CLOB PerpDEXs</li>
+                        <li><span class="checkmark">✓</span> Support for AMM PerpDEXs on Arbitrum and BNB Chain</li>
+                        <li><span class="checkmark">✓</span> Launch XPuzzle points system</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="roadmap-card-wrapper">
+                <div class="roadmap-card highlighted">
+                    <div class="roadmap-quarter">Q2 2026</div>
+                    <ul class="roadmap-list">
+                        <li><span class="checkmark">✓</span> Official platform launch</li>
+                        <li><span class="checkmark">✓</span> Integration with more CLOB PerpDEXs</li>
+                        <li><span class="checkmark">✓</span> Support for AMM PerpDEXs on more blockchains</li>
+                        <li><span class="checkmark">✓</span> Enhanced AI Agent integration</li>
+                        <li><span class="checkmark">✓</span> Third-party Agents can seamlessly interact with XPuzzle</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="roadmap-card-wrapper">
+                <div class="roadmap-card">
+                    <div class="roadmap-quarter">Q3 2026</div>
+                    <ul class="roadmap-list">
+                        <li><span class="checkmark">✓</span> Launch decentralized Solver and Relayer solution</li>
+                        <li><span class="checkmark">✓</span> Increase community participation</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ区域 -->
+    <section id="faq" class="faq-section">
+        <div class="container">
+            <h2 class="section-title">FAQ</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What services does XPuzzle provide?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>XPuzzle is an easy-to-use trading aggregator supporting multiple CLOB PerpDEXs. Trade spot and perpetual contracts including crypto, stocks, forex, gold, and oil.</p>
+                        <p>We automatically select the best DEX with lowest slippage and fees based on your trading intent.</p>
+                        <p>XPuzzle also detects trading mining incentives and supports custom trading bots and AI agents for automated trading.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>How to deposit assets to XPuzzle?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Transfer tokens to XPuzzle deposit addresses on Arbitrum and BNB Chain.</p>
+                        <p>We will add support for ETH, Base, Optimism, Polygon, Avalanche, Injective, Solana, XLayer, and Monad in the future.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>Is there a XPuzzle Mobile APP? Where can I get it?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Mobile app will launch in Q2 2026. Download links will be available on our website.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        <span>What login methods does XPuzzle support?</span>
+                        <span class="faq-icon">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <p>XPuzzle supports Web3 wallets like MetaMask, and social logins including phone, email, Twitter, and Google accounts.</p>
+                        <p>Multi-factor authentication is available with automatic detection of suspicious logins.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部导航栏 -->
+    <nav class="navbar navbar-bottom">
+        <div class="container">
+            <div class="logo"><span class="logo-x">X</span><span class="logo-puzzle">Puzzle</span></div>
+            <div class="navbar-copyright">© 2025 XPuzzle. All rights reserved.</div>
+        </div>
+    </nav>
+
+    <!-- 滚动指示器 -->
+    <div class="scroll-indicator" id="fixed-scroll-indicator" onclick="scrollToNextSection()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M7 10L12 15L17 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </div>
+
+    <script>
+        // ==================== 功能模块1：卡片中轴线高亮效果 ====================
+        /**
+         * 功能说明：当卡片位于屏幕中轴线时，添加 on-centerline 类，边框和底色都显示深蓝色效果
+         * 实现方式：计算每个卡片中心点与屏幕中轴线的距离，给最近的卡片添加类
+         */
+        const updateCenterlineCards = () => {
+            const wrappers = document.querySelectorAll('.advantage-item-wrapper, .roadmap-card-wrapper');
+            const faqItems = document.querySelectorAll('.faq-item');
+            const vh = window.innerHeight;
+            const centerY = vh / 2;
+            const scrollY = window.scrollY || document.documentElement.scrollTop;
+            
+            // 移除所有 on-centerline 类
+            wrappers.forEach(wrapper => wrapper.classList.remove('on-centerline'));
+            faqItems.forEach(item => item.classList.remove('on-centerline'));
+            
+            // 找到距离中轴线最近的元素
+            let closestElement = null;
+            let minDistance = Infinity;
+            let closestElementTop = -1;
+            
+            // 检查所有wrapper
+            wrappers.forEach(wrapper => {
+                const rect = wrapper.getBoundingClientRect();
+                const elementTop = scrollY + rect.top;
+                const elementCenter = elementTop + rect.height / 2;
+                const viewportCenter = scrollY + centerY;
+                const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
+                
+                if (distanceFromCenter < minDistance || 
+                    (Math.abs(distanceFromCenter - minDistance) < 0.1 && elementTop > closestElementTop)) {
+                    minDistance = distanceFromCenter;
+                    closestElement = wrapper;
+                    closestElementTop = elementTop;
+                }
+            });
+            
+            // 检查所有faq-item
+            faqItems.forEach(item => {
+                const rect = item.getBoundingClientRect();
+                const elementTop = scrollY + rect.top;
+                const elementCenter = elementTop + rect.height / 2;
+                const viewportCenter = scrollY + centerY;
+                const distanceFromCenter = Math.abs(elementCenter - viewportCenter);
+                
+                if (distanceFromCenter < minDistance || 
+                    (Math.abs(distanceFromCenter - minDistance) < 0.1 && elementTop > closestElementTop)) {
+                    minDistance = distanceFromCenter;
+                    closestElement = item;
+                    closestElementTop = elementTop;
+                }
+            });
+            
+            // 给最近的元素添加 on-centerline 类
+            if (closestElement) {
+                closestElement.classList.add('on-centerline');
+            }
+        };
+        
+        const initCenterlineEffect = () => {
+            updateCenterlineCards();
+            let ticking = false;
+            const handleScroll = () => {
+                if (!ticking) {
+                    window.requestAnimationFrame(() => {
+                        updateCenterlineCards();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            };
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            window.addEventListener('resize', updateCenterlineCards, { passive: true });
+        };
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initCenterlineEffect);
+        } else {
+            initCenterlineEffect();
+        }
+        window.addEventListener('load', initCenterlineEffect);
+
+        // ==================== 功能模块2：视觉特效系统 ====================
+        /**
+         * 功能说明：实现元素的缩放和透明度效果
+         * 特效1：放大镜特效 - 元素距离中轴线越近，缩放越大
+         * 特效2：透明渐变特效 - 元素在屏幕上方向下移动时逐渐变透明
+         */
+        const EFFECT_SELECTORS = '.hero-item-wrapper,.section-title,.advantage-item-wrapper,.roadmap-card-wrapper,.showcase-content,.faq-item';
+        
+        // 创建RAF处理器，优化性能
+        const createRAFHandler = (callback) => {
+            let rafId = null, isDirty = false;
+            const rafCallback = () => { 
+                if (isDirty) { 
+                    callback(); 
+                    isDirty = false; 
+                    rafId = null; 
+                } 
+            };
+            const handleScroll = () => { 
+                if (!isDirty) { 
+                    isDirty = true; 
+                    if (!rafId) rafId = requestAnimationFrame(rafCallback); 
+                } 
+            };
+            const handleResize = () => { 
+                isDirty = true; 
+                if (!rafId) rafId = requestAnimationFrame(rafCallback); 
+            };
+            const init = () => { 
+                callback(); 
+                window.addEventListener('scroll', handleScroll, { passive: true }); 
+                window.addEventListener('resize', handleResize, { passive: true }); 
+            };
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
+            }
+        };
+
+        // 特效1：放大镜特效（中心线透视缩放）
+        (function(){
+            const MAX_SCALE = 1.15, MIN_SCALE = 0.35, FALLOFF_RATIO = 0.55;
+            const clamp = (v,min,max) => Math.min(Math.max(v,min),max);
+            const smoothstep = t => t * t * (3 - 2 * t);
+            const calculateScale = (dist, vh) => {
+                const t = clamp(dist / (vh * FALLOFF_RATIO), 0, 1);
+                return MAX_SCALE + (MIN_SCALE - MAX_SCALE) * smoothstep(t);
+            };
+            const applyEffect = () => {
+                const vh = window.innerHeight, centerY = vh / 2;
+                document.querySelectorAll(EFFECT_SELECTORS).forEach(el => {
+                    const cs = window.getComputedStyle(el);
+                    if (cs.visibility === 'hidden' && cs.opacity === '0') return;
+                    const rect = el.getBoundingClientRect();
+                    const dist = Math.abs(rect.top + rect.height / 2 - centerY);
+                    el.style.setProperty('transform', 'translateZ(0) scale(' + calculateScale(dist, vh) + ')', 'important');
+                });
+            };
+            createRAFHandler(applyEffect);
+        })();
+
+        // 特效2：透明渐变特效（元素消失时的透明度）
+        (function(){
+            const MIN_OPACITY = 0, MAX_OPACITY = 1;
+            const easeInOutQuart = t => t < 0.5 ? 8 * t * t * t * t : 1 - Math.pow(-2 * t + 2, 4) / 2;
+            const calculateOpacity = (elementCenterY, centerY) => {
+                if (elementCenterY >= centerY) return MAX_OPACITY;
+                const distFromCenter = centerY - elementCenterY;
+                const opacityProgress = Math.min(1, distFromCenter / centerY);
+                return MAX_OPACITY - (MAX_OPACITY - MIN_OPACITY) * easeInOutQuart(opacityProgress);
+            };
+            const applyEffect = () => {
+                const vh = window.innerHeight, centerY = vh / 2;
+                document.querySelectorAll(EFFECT_SELECTORS).forEach(el => {
+                    const cs = window.getComputedStyle(el);
+                    if (cs.visibility === 'hidden' && cs.opacity === '0') return;
+                    const rect = el.getBoundingClientRect();
+                    const elementCenterY = rect.top + rect.height / 2;
+                    const opacity = calculateOpacity(elementCenterY, centerY);
+                    el.style.setProperty('filter', 'brightness(1)', 'important');
+                    el.style.setProperty('opacity', opacity.toString(), 'important');
+                });
+            };
+            createRAFHandler(applyEffect);
+        })();
+
+        // ==================== 功能模块3：Coming Soon 提示 ====================
+        /**
+         * 功能说明：点击docs链接和Start Trading按钮时显示"Coming Soon"提示
+         */
+        const initComingSoon = () => {
+            // Docs链接
+            const docsLink = document.querySelector('a[href="#docs"]');
+            if (docsLink) {
+                docsLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    alert('Coming Soon');
+                });
+            }
+            
+            // Start Trading按钮
+            const startTradingBtn = document.querySelector('.cta-button-primary');
+            if (startTradingBtn) {
+                startTradingBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    alert('Coming Soon');
+                });
+            }
+        };
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initComingSoon);
+        } else {
+            setTimeout(initComingSoon, 100);
+        }
+
+        // ==================== 功能模块4：FAQ手风琴交互 ====================
+        /**
+         * 功能说明：点击FAQ问题展开/收起答案
+         * 实现方式：切换 active 类，CSS控制 max-height 实现动画
+         */
+        const initFAQ = () => {
+            const faqItems = document.querySelectorAll('.faq-item');
+            faqItems.forEach(item => {
+                const question = item.querySelector('.faq-question');
+                if (!question) return;
+                question.addEventListener('click', () => {
+                    const isActive = item.classList.contains('active');
+                    // 关闭所有其他FAQ项
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    // 切换当前项
+                    if (isActive) {
+                        item.classList.remove('active');
+                    } else {
+                        item.classList.add('active');
+                    }
+                });
+            });
+        };
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initFAQ);
+        } else {
+            setTimeout(initFAQ, 100);
+        }
+
+        // ==================== 功能模块4：平滑滚动 ====================
+        /**
+         * 功能说明：点击锚点链接时平滑滚动到目标位置
+         * 注意：docs链接已在initComingSoon中处理，这里跳过
+         */
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                // docs链接已在initComingSoon中处理，这里跳过
+                if (href === '#' || href === '#docs' || this.onclick) return;
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+        });
+
+        // ==================== 功能模块5：滚动到下一节 ====================
+        /**
+         * 功能说明：点击白色箭头时，滚动到下一个元素
+         * 实现方式：找到所有可滚动元素，计算当前位置，滚动到下一个
+         */
+        const scrollToNextSection = () => {
+            const vh = window.innerHeight, centerY = vh / 2, scrollY = window.scrollY;
+            const selectors = ['.hero-item-wrapper', '.advantage-item-wrapper', '.showcase-content', '.roadmap-card-wrapper', '.faq-item'];
+            const items = [];
+            selectors.forEach(sel => {
+                document.querySelectorAll(sel).forEach(item => {
+                    const rect = item.getBoundingClientRect();
+                    const top = scrollY + rect.top;
+                    items.push({ top, center: top + rect.height / 2 });
+                });
+            });
+            items.sort((a, b) => a.top - b.top);
+            const viewportCenter = scrollY + centerY;
+            let currentIndex = -1, minDist = Infinity;
+            items.forEach((item, index) => {
+                const dist = Math.abs(item.center - viewportCenter);
+                if (dist < minDist) { minDist = dist; currentIndex = index; }
+            });
+            const targetItem = (currentIndex === -1 || currentIndex >= items.length - 1) ? items[0] : items[currentIndex + 1];
+            if (targetItem) window.scrollTo({ top: Math.max(0, targetItem.center - centerY), behavior: 'smooth' });
+        };
+
+        // ==================== 功能模块6：初始化滚动位置 ====================
+        /**
+         * 功能说明：页面加载时，确保滚动位置在顶部
+         */
+        const setInitialScrollPosition = () => {
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        };
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(setInitialScrollPosition, 100);
+            });
+        } else {
+            setTimeout(setInitialScrollPosition, 100);
+        }
+        window.addEventListener('load', () => {
+            setTimeout(setInitialScrollPosition, 200);
+        });
+
+        // ==================== 功能模块7：限制最大滚动位置 ====================
+        /**
+         * 功能说明：限制页面滚动，使最后一个FAQ项的中心点对齐屏幕中轴线时停止
+         * 实现方式：计算最后一个FAQ项的位置，动态设置最大滚动值
+         */
+        let maxScrollTop = 0;
+        let isCalculating = false;
+        let lastKnownHeight = 0;
+        let isScrollingFast = false;
+        let fastScrollTimeout = null;
+        let scrollLimitEnabled = true;
+        
+        const calculateMaxScrollPosition = () => {
+            const allFaqItems = document.querySelectorAll('.faq-item');
+            if (allFaqItems.length === 0 || isCalculating || isScrollingFast) return;
+            const lastFaqItem = allFaqItems[allFaqItems.length - 1];
+            if (!lastFaqItem) return;
+            
+            const currentScroll = window.scrollY || document.documentElement.scrollTop;
+            const body = document.body;
+            const html = document.documentElement;
+            const currentHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+            const isAtBottom = currentScroll + window.innerHeight >= currentHeight - 10;
+            
+            if (isScrollingFast) {
+                setTimeout(() => calculateMaxScrollPosition(), 500);
+                return;
+            }
+            
+            isCalculating = true;
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            
+            setTimeout(() => {
+                const vh = window.innerHeight;
+                const centerY = vh / 2;
+                const rect = lastFaqItem.getBoundingClientRect();
+                const scrollY = window.scrollY || document.documentElement.scrollTop;
+                const itemTop = scrollY + rect.top;
+                const itemCenter = itemTop + rect.height / 2;
+                const newMaxScrollTop = itemCenter - centerY;
+                
+                const newHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+                const requiredHeight = newMaxScrollTop + vh;
+                if (newHeight < requiredHeight) {
+                    const paddingNeeded = requiredHeight - newHeight;
+                    body.style.paddingBottom = paddingNeeded + 'px';
+                    
+                    setTimeout(() => {
+                        const finalRect = lastFaqItem.getBoundingClientRect();
+                        const finalScrollY = window.scrollY || document.documentElement.scrollTop;
+                        const finalItemTop = finalScrollY + finalRect.top;
+                        const finalItemCenter = finalItemTop + finalRect.height / 2;
+                        maxScrollTop = finalItemCenter - centerY;
+                        
+                        lastKnownHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+                        
+                        if (isAtBottom) {
+                            const finalHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+                            window.scrollTo({ top: finalHeight - window.innerHeight, behavior: 'instant' });
+                        } else {
+                            window.scrollTo({ top: currentScroll, behavior: 'instant' });
+                        }
+                        isCalculating = false;
+                    }, 50);
+                } else {
+                    maxScrollTop = newMaxScrollTop;
+                    lastKnownHeight = newHeight;
+                    if (isAtBottom) {
+                        window.scrollTo({ top: newHeight - window.innerHeight, behavior: 'instant' });
+                    } else {
+                        window.scrollTo({ top: currentScroll, behavior: 'instant' });
+                    }
+                    isCalculating = false;
+                }
+            }, 100);
+        };
+
+        let lastScrollY = 0;
+        let lastScrollTime = Date.now();
+        
+        const limitScrollPosition = () => {
+            if (!scrollLimitEnabled || isCalculating || maxScrollTop === 0) return;
+            
+            const scrollY = window.scrollY || document.documentElement.scrollTop;
+            const currentTime = Date.now();
+            const timeDelta = currentTime - lastScrollTime;
+            const scrollDelta = Math.abs(scrollY - lastScrollY);
+            
+            if (timeDelta > 0 && timeDelta < 50 && scrollDelta / timeDelta > 3) {
+                isScrollingFast = true;
+                if (fastScrollTimeout) clearTimeout(fastScrollTimeout);
+                fastScrollTimeout = setTimeout(() => {
+                    isScrollingFast = false;
+                    fastScrollTimeout = null;
+                }, 200);
+            }
+            
+            lastScrollY = scrollY;
+            lastScrollTime = currentTime;
+            
+            const body = document.body;
+            const html = document.documentElement;
+            const currentHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+            const isAtBottom = scrollY + window.innerHeight >= currentHeight - 10;
+            
+            if (isAtBottom || isScrollingFast) return;
+            
+            const allFaqItems = document.querySelectorAll('.faq-item');
+            if (allFaqItems.length > 0) {
+                const lastFaqItem = allFaqItems[allFaqItems.length - 1];
+                const rect = lastFaqItem.getBoundingClientRect();
+                const vh = window.innerHeight;
+                const centerY = vh / 2;
+                const itemTop = scrollY + rect.top;
+                const itemCenter = itemTop + rect.height / 2;
+                const currentItemCenterInViewport = rect.top + rect.height / 2;
+                
+                if (currentItemCenterInViewport <= centerY) {
+                    if (scrollY > maxScrollTop + 5) {
+                        window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
+                    }
+                }
+            } else if (scrollY > maxScrollTop + 10) {
+                window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
+            }
+        };
+
+        const initMaxScrollLimit = () => {
+            setTimeout(() => {
+                calculateMaxScrollPosition();
+                let ticking = false;
+                let lastLimitCheck = 0;
+                const handleScroll = () => {
+                    const now = Date.now();
+                    if (now - lastLimitCheck < 50) return;
+                    lastLimitCheck = now;
+                    
+                    if (!ticking && !isCalculating) {
+                        window.requestAnimationFrame(() => {
+                            limitScrollPosition();
+                            ticking = false;
+                        });
+                        ticking = true;
+                    }
+                };
+                window.addEventListener('scroll', handleScroll, { passive: true });
+                window.addEventListener('resize', () => {
+                    setTimeout(calculateMaxScrollPosition, 100);
+                });
+            }, 800);
+        };
+                
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                setTimeout(initMaxScrollLimit, 500);
+            });
+        } else {
+            setTimeout(initMaxScrollLimit, 500);
+        }
+        window.addEventListener('load', () => {
+            setTimeout(initMaxScrollLimit, 500);
+        });
+
+        // ==================== 功能模块8：底部导航栏和滚动指示器显示控制 ====================
+        /**
+         * 功能说明：当滚动到底部时，显示底部导航栏，隐藏白色箭头
+         */
+        const updateBottomNavbar = () => {
+            const bottomNavbar = document.querySelector('.navbar-bottom');
+            const scrollIndicator = document.getElementById('fixed-scroll-indicator');
+            if (!bottomNavbar) return;
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const windowHeight = window.innerHeight;
+            const documentHeight = document.documentElement.scrollHeight;
+            const isAtBottom = scrollTop + windowHeight >= documentHeight - 10;
+            bottomNavbar.classList.toggle('visible', isAtBottom);
+            if (scrollIndicator) {
+                scrollIndicator.classList.toggle('hidden', isAtBottom);
+            }
+        };
+        window.addEventListener('scroll', updateBottomNavbar, { passive: true });
+        window.addEventListener('resize', updateBottomNavbar, { passive: true });
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateBottomNavbar);
+        } else {
+            updateBottomNavbar();
+        }
+    </script>
+</body>
+</html>
