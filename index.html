@@ -959,9 +959,9 @@
                                         const finalRect = lastFaqItem.getBoundingClientRect();
                                         const finalScrollY = window.scrollY || document.documentElement.scrollTop;
                                         const finalItemTop = finalScrollY + finalRect.top;
-                                        const finalItemCenter = finalItemTop + finalRect.height / 2;
-                                        // 确保maxScrollTop允许最后一个FAQ项到达中轴线
-                                        maxScrollTop = finalItemCenter - centerY;
+                        const finalItemCenter = finalItemTop + finalRect.height / 2;
+                        // 确保maxScrollTop允许最后一个FAQ项到达中轴线，使用Math.max确保不为负数
+                        maxScrollTop = Math.max(0, finalItemCenter - centerY);
                                         
                                         lastKnownHeight = Math.max(
                                             document.body.scrollHeight,
@@ -989,7 +989,8 @@
                                 });
                             }, 150);
                         } else {
-                            maxScrollTop = newMaxScrollTop;
+                            // 使用Math.max确保maxScrollTop不为负数
+                            maxScrollTop = Math.max(0, newMaxScrollTop);
                             lastKnownHeight = newHeight;
                             if (isAtBottom) {
                                 window.scrollTo({ top: newHeight - window.innerHeight, behavior: 'instant' });
@@ -1035,29 +1036,29 @@
             if (isAtBottom || isScrollingFast) return;
             
             const allFaqItems = document.querySelectorAll('.faq-item');
-            if (allFaqItems.length > 0) {
-                const lastFaqItem = allFaqItems[allFaqItems.length - 1];
-                const rect = lastFaqItem.getBoundingClientRect();
-                const vh = window.innerHeight;
-                const centerY = vh / 2;
-                const currentScrollY = window.scrollY || document.documentElement.scrollTop;
-                const currentItemCenterInViewport = rect.top + rect.height / 2;
-                
-                // 关键修改：允许最后一个FAQ项的中心点到达中轴线
-                // 只有当中心点还在中轴线上方时，才限制滚动
-                // 一旦中心点到达或超过中轴线，完全不再限制
-                if (currentItemCenterInViewport > centerY + 1) {
-                    // 中心点还在中轴线上方1px以上，才限制滚动
-                    // 允许滚动到maxScrollTop，这样最后一个FAQ项可以到达中轴线
-                    if (currentScrollY > maxScrollTop + 20) {
-                        // 只在实际超过maxScrollTop很多（20px）时才限制，给足够的容差
-                        window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
-                    }
+            if (allFaqItems.length === 0) return;
+            
+            // 只检查最后一个FAQ项，确保只有最后一个FAQ项到达中轴线时才停止滚动
+            const lastFaqItem = allFaqItems[allFaqItems.length - 1];
+            if (!lastFaqItem) return;
+            
+            const rect = lastFaqItem.getBoundingClientRect();
+            const vh = window.innerHeight;
+            const centerY = vh / 2;
+            const currentScrollY = window.scrollY || document.documentElement.scrollTop;
+            const lastItemCenterInViewport = rect.top + rect.height / 2;
+            
+            // 关键逻辑：只有当最后一个FAQ项的中心点还在中轴线上方时，才限制滚动
+            // 一旦最后一个FAQ项的中心点到达或超过中轴线，就完全不再限制滚动
+            // 这样前面的FAQ项可以正常滚动，只有最后一个FAQ项到达中轴线时才停止
+            if (lastItemCenterInViewport > centerY) {
+                // 最后一个FAQ项的中心点还在中轴线上方
+                // 只有当滚动位置明显超过maxScrollTop时才限制（给足够容差，允许前面的FAQ项正常滚动）
+                if (currentScrollY > maxScrollTop + 50) {
+                    window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
                 }
-                // 如果最后一个FAQ项的中心点已经到达或超过中轴线（在centerY+1px以内），完全不再限制滚动
-            } else if (scrollY > maxScrollTop + 20) {
-                window.scrollTo({ top: maxScrollTop, behavior: 'instant' });
             }
+            // 如果最后一个FAQ项的中心点已经到达或超过中轴线，完全不再限制滚动
         };
 
         const initMaxScrollLimit = () => {
